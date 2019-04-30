@@ -1,4 +1,4 @@
-# esx_impound
+# esx_kuana_impound
 
 ESX Impound is a plugin that adds impound lots around the map. Users must either wait a specified amount of time, or pay a fine, or both
 before retrieving their vehicle (configurable)
