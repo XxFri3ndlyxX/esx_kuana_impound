@@ -115,12 +115,12 @@ Citizen.CreateThread(function()
     if isInMarker and not hasAlreadyEnteredMarker then
       hasAlreadyEnteredMarker = true
       LastZone                = currentZone
-      TriggerEvent('esx_impound:hasEnteredMarker', currentZone)
+      TriggerEvent('esx_kuana_impound:hasEnteredMarker', currentZone)
     end
 
     if not isInMarker and hasAlreadyEnteredMarker then
       hasAlreadyEnteredMarker = false
-      TriggerEvent('esx_impound:hasExitedMarker', LastZone)
+      TriggerEvent('esx_kuana_impound:hasExitedMarker', LastZone)
     end
   end
 end)
@@ -147,7 +147,7 @@ Citizen.CreateThread(function()
   end
 end)
 
-AddEventHandler('esx_impound:hasEnteredMarker', function(zone)
+AddEventHandler('esx_kuana_impound:hasEnteredMarker', function(zone)
   if zone == 'impound_lot' then
     CurrentAction     = 'impound_lot_menu'
     CurrentActionMsg  = "Press ~INPUT_LOOK_BEHIND~ to access the impound lot"
@@ -164,13 +164,13 @@ AddEventHandler('esx:setJob', function(job)
   end
 end)
 
-AddEventHandler('esx_impound:hasExitedMarker', function(zone)
+AddEventHandler('esx_kuana_impound:hasExitedMarker', function(zone)
   ESX.UI.Menu.CloseAll()
   CurrentAction = nil
 end)
 
-RegisterNetEvent("esx_impound:impound_nearest_vehicle")
-AddEventHandler("esx_impound:impound_nearest_vehicle", function(args)
+RegisterNetEvent("esx_kuana_impound:impound_nearest_vehicle")
+AddEventHandler("esx_kuana_impound:impound_nearest_vehicle", function(args)
   local coords = GetEntityCoords(GetPlayerPed(-1))
   local vehicle = GetClosestVehicle(coords['x'],  coords['y'],  coords['z'],  2.0,  0,  71)
 
@@ -182,7 +182,7 @@ AddEventHandler("esx_impound:impound_nearest_vehicle", function(args)
         local vprops = ESX.Game.GetVehicleProperties(vehicle)
         local plate = vprops.plate
 
-        ESX.TriggerServerCallback('esx_impound:impound_vehicle', function()
+        ESX.TriggerServerCallback('esx_kuana_impound:impound_vehicle', function()
           ESX.ShowNotification('Vehicle has been impounded!')
           ESX.Game.DeleteVehicle(vehicle)
         end, plate)
@@ -300,7 +300,7 @@ function ImpoundCurrentVehicle()
   local vprops = ESX.Game.GetVehicleProperties(vehicle)
   local plate = vprops.plate
 
-  ESX.TriggerServerCallback('esx_impound:impound_vehicle', function()
+  ESX.TriggerServerCallback('esx_kuana_impound:impound_vehicle', function()
     ESX.ShowNotification('Vehicle has been impounded!')
     ESX.Game.DeleteVehicle(vehicle)
   end, plate)
@@ -317,7 +317,7 @@ function ListVehiclesMenu()
   local elements = {}
   local elementPages = {}
 
-  ESX.TriggerServerCallback('esx_impound:get_vehicle_list', function(vehicles)
+  ESX.TriggerServerCallback('esx_kuana_impound:get_vehicle_list', function(vehicles)
     for _,v in pairs(vehicles) do
       local hashVehicule = v.vehicle.model
       local vehicleName = GetDisplayNameFromVehicleModel(hashVehicule)
@@ -427,7 +427,7 @@ function loadListVehiclePage(elementPages, page)
         menu.close()
 
         if Config.UserMustPayFine then
-          ESX.TriggerServerCallback('esx_impound:check_money', function(paidFine)
+          ESX.TriggerServerCallback('esx_kuana_impound:check_money', function(paidFine)
             if paidFine then
               SpawnVehicle(data.current.value.vehicle)
             else
@@ -462,7 +462,7 @@ function loadListVehiclePage(elementPages, page)
       heading = currentImpoundLot.RetrievePoint.Heading
     end
 
-    ESX.TriggerServerCallback('esx_impound:retrieve_vehicle', function()
+    ESX.TriggerServerCallback('esx_kuana_impound:retrieve_vehicle', function()
       ESX.ShowNotification('Vehicle has been released!')
       CreateClientSideVehicle(vehicle)
     end, plate)
