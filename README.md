@@ -21,7 +21,7 @@ Add it to your server-data/resources folder
 Add to your server.cfg file
 
 ```
-start esx_impound
+start esx_kuana_impound
 ```
 
 Create your config file from the default.
