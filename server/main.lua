@@ -2,20 +2,20 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 RegisterCommand('impound', function(source, args)
-  TriggerClientEvent('esx_impound:impound_nearest_vehicle', source)
+  TriggerClientEvent('esx_kuana_impound:impound_nearest_vehicle', source)
 end)
 
-ESX.RegisterServerCallback('esx_impound:impound_vehicle', function(source, cb, plate)
+ESX.RegisterServerCallback('esx_kuana_impound:impound_vehicle', function(source, cb, plate)
   ImpoundVehicle(plate)
   cb()
 end)
 
-ESX.RegisterServerCallback('esx_impound:retrieve_vehicle', function(source, cb, plate)
+ESX.RegisterServerCallback('esx_kuana_impound:retrieve_vehicle', function(source, cb, plate)
   RetrieveVehicle(plate)
   cb()
 end)
 
-ESX.RegisterServerCallback('esx_impound:get_vehicle_list', function(source, cb)
+ESX.RegisterServerCallback('esx_kuana_impound:get_vehicle_list', function(source, cb)
   local _source = source
   local xPlayer = ESX.GetPlayerFromId(_source)
   local vehicles = {}
@@ -29,7 +29,7 @@ ESX.RegisterServerCallback('esx_impound:get_vehicle_list', function(source, cb)
   end)
 end)
 
-ESX.RegisterServerCallback('esx_impound:check_money', function(source, cb)
+ESX.RegisterServerCallback('esx_kuana_impound:check_money', function(source, cb)
   local xPlayer = ESX.GetPlayerFromId(source)
 
   if xPlayer.get('money') >= Config.ImpoundFineAmount then
