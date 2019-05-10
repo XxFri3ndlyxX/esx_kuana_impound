@@ -16,61 +16,58 @@ Kuana_garage
 
 # Installation
 
-Add it to your server-data/resources folder
+Add it to your server-data/resources [ESX] folder
 
 Add to your server.cfg file
-
+It needs to start after start Kuana_garage and before all job.  
 ```
 start esx_kuana_impound
 ```
+Import the sql file into your database
 
-Create your config file from the default.
-
-```
-  Edit config.lua
-```
-
-Add any additional impound lots that you want in the config file. An example impound lot is below.
-
-```lua
-SandyAirField = {
-  Pos = {x=1731.30, y= 3310.54, z= 40.22}, -- Position of map blip
-  Size  = {x = 10.0, y = 10.0, z = 1.0}, -- Size
-  Color = {r=0,g=255,b=0}, -- Blip Color
-  Marker = 1,
-  Type = "smallhanger", -- Type of "impound" type. Available options are nil (default), helipad, dock or small hanger
-
-  -- table of vehicles that are able to spawn at this lot
-  AllowedVehicles = {
-    "duster",
-    "dodo"
-  },
-
-  -- Retrieval marker
-  RetrievePoint = {
-    Pos = {x=1731.30, y= 3310.54, z= 40.22},
-    Heading = 185.0,
-    Color = {r=0,g=255,b=0},
-    Size  = {x = 10.0, y = 10.0, z = 1.0},
-    Marker = 1
-  },
-
-  --  marker
-  DropoffPoint = {
-    Pos = {x=1731.30, y= 3310.54, z= 40.22},
-    Color = {r=0,g=255,b=0},
-    Size  = {x = 10.0, y = 10.0, z = 1.0},
-    Marker = 1
-  }, 	
-},
-```
-
-Review and execute the esx_impound.sql file. If you wish to add additional impound locations you can do that
-by adding appropriate entries to the config file.
+The only edit you need to do is in server/main.lua  You need to edit the xx yy zz hh
+So that when the person retrieve the vehicle from impound and somehow something happen server crash the vehicle when spawn will be at the choosen location.  
 
 ```
--- Set to true if you are using a "plate" column on your owned_vehicles table (such as when using esx_migrate)
-Config.OwnedVehiclesHasPlateColumn = false
+function RetrieveVehicle(plate)
+
+  -- Retrieve vehicle data from impound lot
+  MySQL.Async.fetchAll('SELECT * FROM impounded_vehicles WHERE plate = @plate LIMIT 1', {
+    ['@plate'] = plate
+  }, function(vehicles)
+    for index, vehicle in pairs(vehicles) do
+      -- Insert vehicle into owned_vehicles table
+      if Config.OwnedVehiclesHasPlateColumn then
+        MySQL.Async.execute("INSERT INTO `owned_vehicles` (plate, vehicle, owner, state, x, y, z, h, health) VALUES(@plate, @vehicle, @owner, '0', @xx, @yy, @zz, @hh, @vida)",
+          {
+            ['@plate'] = plate,
+            ['@vehicle'] = vehicle.vehicle,
+            ['@owner'] = vehicle.owner,
+            ["@xx"] = 1021.531494140625, -- EDIT ME
+            ["@yy"] = 3602.4130859375, -- EDIT ME
+            ["@zz"] = 32.889305114746094, -- EDIT ME
+            ["@hh"] = 279.34527587890625, -- EDIT ME
+            ["@vida"] = 1000
+          }
+        )
+      else
+        MySQL.Async.execute("INSERT INTO `owned_vehicles` (vehicle, owner, state, x, y, z, h, health) VALUES(@vehicle, @owner, '0', @xx, @yy, @zz, @hh, @vida)",
+          {
+            ['@vehicle'] = vehicle.vehicle,
+            ['@owner'] = vehicle.owner,
+            ["@xx"] = 1021.531494140625, -- EDIT ME
+            ["@yy"] = 3602.4130859375, -- EDIT ME
+            ["@zz"] = 32.889305114746094, -- EDIT ME
+            ["@hh"] = 279.34527587890625, -- EDIT ME
+            ["@vida"] = 1000
+          }
+        )
+      end
+      -- Delete vehicle from Impound Lot
+      MySQL.Async.execute("DELETE FROM impounded_vehicles WHERE id=@id LIMIT 1", {['@id'] = vehicle.id})
+    end
+  end)
+end
 ```
-<br>
+
 Join my discord channel https://discord.gg/xncafqk
