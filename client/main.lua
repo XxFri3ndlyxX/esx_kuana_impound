@@ -14,7 +14,7 @@ local Keys = {
 ESX = nil
 local HasAlreadyEnteredMarker   = false
 local LastZone                  = nil
-local PlayerData                = nil
+local PlayerData		            = {}
 local CurrentActionMsg          = ''
 local CurrentActionData         = {}
 local GUI                       = {}
@@ -28,10 +28,16 @@ local currentJob                = 'unemployed'
 Setup of ESX
 ]]
 Citizen.CreateThread(function()
-  while ESX == nil do
-    TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-    Citizen.Wait(0)
-  end
+	while ESX == nil do
+		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+		Citizen.Wait(0)
+	end
+	
+	while ESX.GetPlayerData().job == nil do
+		Citizen.Wait(10)
+	end
+
+	PlayerData = ESX.GetPlayerData()
 end)
 
 RegisterNetEvent('esx:playerLoaded')
@@ -205,8 +211,8 @@ AddEventHandler("esx_kuana_impound:impound_nearest_vehicle", function(args)
     if not Config.RestrictImpoundToJobs then
       return true
     end
-
-    if has_value(Config.JobsThatCanImpound, currentJob) then
+    local xPlayer = ESX.GetPlayerData()
+    if has_value(Config.JobsThatCanImpound, xPlayer.job.name) then
       return true
     else
       return false
@@ -224,8 +230,8 @@ AddEventHandler("esx_kuana_impound:impound_nearest_vehicle", function(args)
     if not Config.RestrictRetrievalToJobs then
       return true
     end
-
-    if has_value(Config.JobsThatCanRetrieve, currentJob) then
+    local xPlayer = ESX.GetPlayerData()
+    if has_value(Config.JobsThatCanRetrieve, xPlayer.job.name) then
       return true
     else
       return false
