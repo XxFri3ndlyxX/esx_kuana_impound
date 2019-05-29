@@ -41,11 +41,7 @@ end)
 
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
-  playerIsLoaded = true
   PlayerData = xPlayer
-  if (hasImpoundAppropriateJob() or hasRetrievalAppropriateJob()) then
-    drawImpoundLotMapBlips()
-  end
 end)
 
 RegisterNetEvent('esx:setJob')
@@ -75,27 +71,12 @@ function drawImpoundLotMapBlips()
 end
 
 --[[
-  Deletes drawn map blips
-]]
-function deleteImpoundLotMapBlips()
-  for index, blip in pairs(DrawnMapBlips) do
-    RemoveBlip(blip)
-  end
-end
-
---[[
 Thread for drawing the dropoff and retrieval markers for
 the impound lots
 ]]
 Citizen.CreateThread(function()
-  while true do
-    Wait(0)
-    if playerIsLoaded then
-      if (hasImpoundAppropriateJob() or hasRetrievalAppropriateJob()) then
         drawImpoundLotMarkers()
-      end
-    end
-  end
+        drawImpoundLotMapBlips()
 end)
 
 --[[
@@ -161,11 +142,7 @@ end)
 
 RegisterNetEvent('esx:setJob')
 AddEventHandler('esx:setJob', function(job)
-  if (hasImpoundAppropriateJob() or hasRetrievalAppropriateJob()) then
     drawImpoundLotMapBlips()
-  else
-    deleteImpoundLotMapBlips()
-  end
 end)
 
 AddEventHandler('esx_kuana_impound:hasExitedMarker', function(zone)
