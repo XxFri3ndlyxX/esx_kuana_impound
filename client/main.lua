@@ -21,8 +21,7 @@ local GUI                       = {}
 local DrawnMapBlips             = {}
 GUI.Time                        = 0
 local currentImpoundLot					= nil
-local playerIsLoaded            = false 
-local currentJob                = 'unemployed'
+local playerIsLoaded            = false
 
 --[[
 Setup of ESX
@@ -43,8 +42,7 @@ end)
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
   playerIsLoaded = true
-  currentJob = ESX.GetPlayerData().job.name
-
+  PlayerData = xPlayer
   if (hasImpoundAppropriateJob() or hasRetrievalAppropriateJob()) then
     drawImpoundLotMapBlips()
   end
@@ -52,7 +50,7 @@ end)
 
 RegisterNetEvent('esx:setJob')
 AddEventHandler('esx:setJob', function(xPlayer)
-  currentJob = ESX.GetPlayerData().job.name
+  PlayerData.job = job
 end)
 
 --[[
